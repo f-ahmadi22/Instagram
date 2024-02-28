@@ -13,6 +13,22 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+
+        user = User.objects.get(username=username, password=password)
+        if not user:
+            raise serializers.ValidationError('Invalid username or password')
+
+        data['user'] = user
+        return data
+
+
 class UserProfilePublicSerializer(serializers.ModelSerializer):
     followings = serializers.SerializerMethodField()
     followers = serializers.SerializerMethodField()
