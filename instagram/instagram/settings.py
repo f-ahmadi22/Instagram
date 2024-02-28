@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 
     # trusted apps
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # myapps
     'content.apps.ContentConfig',

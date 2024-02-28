@@ -10,7 +10,6 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'email', 'is_private', 'bio', 'created_at')
     list_display_links = ('id', 'username', 'email', 'bio', 'is_private')
     list_filter = ('is_private',)
-    list_editable = ('is_private',)
     search_fields = ('username', 'bio')
     ordering = ('id',)
 
