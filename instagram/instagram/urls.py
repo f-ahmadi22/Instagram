@@ -21,4 +21,5 @@ from django.conf import settings
 urlpatterns = [
     path(settings.ADMIN_PATH, admin.site.urls),  # Custom admin path
     path('content/', include('content.urls')),  # Content app urls
+    path('user/', include('user.urls')),  # User app urls
 ]
