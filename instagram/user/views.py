@@ -75,3 +75,15 @@ class FollowAPIView(APIView):
                 return Response({'message': 'User followed successfully'})
             return Response({'error': 'User already followed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UnfollowAPIView(APIView):
+    def post(self, request):
+        user_to_unfollow = User.objects.filter(id=request.data['user_id']).first()
+        if user_to_unfollow:
+            UserRelationship.objects.filter(
+                follower=request.user,
+                following=user_to_unfollow
+            ).delete()
+            return Response({'message': 'User unfollowed successfully'})
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

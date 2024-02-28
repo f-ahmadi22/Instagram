@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import SignupAPIView, LoginAPIView, EditProfileAPIView, ViewProfileAPIView, FollowAPIView
+from .views import SignupAPIView, LoginAPIView, EditProfileAPIView, ViewProfileAPIView, FollowAPIView, UnfollowAPIView
 
 urlpatterns = [
     path('signup/', SignupAPIView.as_view(), name='signup'),
@@ -8,4 +8,5 @@ urlpatterns = [
     path('edit-profile/', EditProfileAPIView.as_view(), name='edit-profile'),
     path('view-profile/<int:pk>/', ViewProfileAPIView.as_view(), name='view-profile'),
     path('follow/', FollowAPIView.as_view(), name='follow'),
+    path('unfollow/', UnfollowAPIView.as_view(), name='unfollow')
 ]

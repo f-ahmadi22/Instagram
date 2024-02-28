@@ -8,7 +8,7 @@ class SignupSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'profile_picture', 'bio', 'is_private', 'date_joined']
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create_user(self, validated_data):
+    def create(self, validated_data):
         user = User.objects.create(**validated_data)
         return user
 
