@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import User, UserRelationship
 
 
-class UserSerializer(serializers.ModelSerializer):
+class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'profile_picture', 'bio', 'is_private', 'created_at']
@@ -27,6 +27,12 @@ class LoginSerializer(serializers.Serializer):
 
         data['user'] = user
         return data
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
 
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):
