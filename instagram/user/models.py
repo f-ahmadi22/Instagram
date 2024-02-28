@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 
-class User(models.Model):
+class MyUser(models.Model):
     username = models.CharField(max_length=100, verbose_name='username', null=False, blank=False)  # Username field
     email = models.EmailField(unique=True, verbose_name='email', null=False, blank=False)  # Email field
     password = models.CharField(max_length=100, verbose_name='password')  # Password field
@@ -28,9 +28,9 @@ class User(models.Model):
 
 class UserRelationship(models.Model):
     # user who follows
-    follower = models.ForeignKey(User, related_name='following', verbose_name='follower', on_delete=models.CASCADE)
+    follower = models.ForeignKey(MyUser, related_name='following', verbose_name='follower', on_delete=models.CASCADE)
     # user who's being followed
-    following = models.ForeignKey(User, related_name='followers', verbose_name='following', on_delete=models.CASCADE)
+    following = models.ForeignKey(MyUser, related_name='followers', verbose_name='following', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

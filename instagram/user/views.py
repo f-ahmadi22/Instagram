@@ -1,9 +1,10 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, UserRelationship
+from .models import MyUser, UserRelationship
 from .serializers import (SignupSerializer, UserProfilePrivateSerializer, UserProfilePublicSerializer,
                           LoginSerializer, UserProfileSerializer)
 
@@ -52,7 +53,7 @@ class EditProfileAPIView(APIView):
 
 class ViewProfileAPIView(APIView):
     def get(self, request, pk):
-        user = User.objects.filter(pk=pk).first()
+        user = MyUser.objects.filter(pk=pk).first()
         if user:
             if user.is_private:
                 serializer = UserProfilePrivateSerializer(user)
@@ -64,8 +65,10 @@ class ViewProfileAPIView(APIView):
 
 
 class FollowAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
-        user_to_follow = User.objects.filter(id=request.data['user_id']).first()
+        user_to_follow = get_object_or_404(MyUser,id=request.data['user_id'])
         if user_to_follow:
             relationship, created = UserRelationship.objects.get_or_create(
                 follower=request.user,
@@ -78,8 +81,10 @@ class FollowAPIView(APIView):
 
 
 class UnfollowAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
-        user_to_unfollow = User.objects.filter(id=request.data['user_id']).first()
+        user_to_unfollow = MyUser.objects.filter(id=request.data['user_id']).first()
         if user_to_unfollow:
             UserRelationship.objects.filter(
                 follower=request.user,

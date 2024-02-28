@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from .models import User, UserRelationship
+from .models import MyUser, UserRelationship
 
 # Register your models here.
 
 
-@register(User)
+@register(MyUser)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'email', 'is_private', 'bio')
     list_display_links = ('id', 'username', 'email', 'bio', 'is_private')

@@ -1,15 +1,15 @@
 from rest_framework import serializers
-from .models import User, UserRelationship
+from .models import MyUser, UserRelationship
 
 
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = MyUser
         fields = ['username', 'email', 'password', 'profile_picture', 'bio', 'is_private', 'date_joined']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        user = MyUser.objects.create(**validated_data)
         return user
 
 
@@ -21,7 +21,7 @@ class LoginSerializer(serializers.Serializer):
         username = data.get('username')
         password = data.get('password')
 
-        user = User.objects.get(username=username, password=password)
+        user = MyUser.objects.get(username=username, password=password)
         if not user:
             raise serializers.ValidationError('Invalid username or password')
 
@@ -31,7 +31,7 @@ class LoginSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = MyUser
         fields = '__all__'
 
 
@@ -42,7 +42,7 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ['username', 'profile_picture', 'bio', 'is_private', 'date_joined',
                   'followers_count', 'followings_count', 'followings', 'followers']
 
@@ -64,7 +64,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ['username', 'profile_picture', 'bio', 'is_private', 'date_joined',
                   'followers_count', 'followings_count']
 
