@@ -40,9 +40,24 @@ class EditProfileAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request):
+        print(request)
         user = request.user
-        serializer = UserProfileSerializer(data=request.data, partial=True)
+        print(user)
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Profile updated successfully'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ViewProfileAPIView(APIView):
+    def get(self, request, pk):
+        user = User.objects.filter(pk=pk).first()
+        if user:
+            if user.is_private:
+                serializer = UserProfilePrivateSerializer(user)
+                return Response(serializer.data)
+            else:
+                serializer = UserProfilePublicSerializer(user)
+                return Response(serializer.data)
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

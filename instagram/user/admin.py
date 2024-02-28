@@ -7,7 +7,7 @@ from .models import User, UserRelationship
 
 @register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'is_private', 'bio', 'created_at')
+    list_display = ('id', 'username', 'email', 'is_private', 'bio')
     list_display_links = ('id', 'username', 'email', 'bio', 'is_private')
     list_filter = ('is_private',)
     search_fields = ('username', 'bio')
