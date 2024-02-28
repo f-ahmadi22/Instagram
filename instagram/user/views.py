@@ -61,3 +61,17 @@ class ViewProfileAPIView(APIView):
                 serializer = UserProfilePublicSerializer(user)
                 return Response(serializer.data)
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FollowAPIView(APIView):
+    def post(self, request):
+        user_to_follow = User.objects.filter(id=request.data['user_id']).first()
+        if user_to_follow:
+            relationship, created = UserRelationship.objects.get_or_create(
+                follower=request.user,
+                following=user_to_follow
+            )
+            if created:
+                return Response({'message': 'User followed successfully'})
+            return Response({'error': 'User already followed'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
