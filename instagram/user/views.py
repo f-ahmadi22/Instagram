@@ -56,8 +56,12 @@ class ViewProfileAPIView(APIView):
         user = MyUser.objects.filter(pk=pk).first()
         if user:
             if user.is_private:
-                serializer = UserProfilePrivateSerializer(user)
-                return Response(serializer.data)
+                if UserRelationship.objects.filter(follower=request.user).exists():
+                    serializer = UserProfilePublicSerializer(user)
+                    return Response(serializer.data)
+                else:
+                    serializer = UserProfilePrivateSerializer(user)
+                    return Response(serializer.data)
             else:
                 serializer = UserProfilePublicSerializer(user)
                 return Response(serializer.data)
@@ -75,7 +79,7 @@ class FollowAPIView(APIView):
                 following=user_to_follow
             )
             if created:
-                return Response({'message': 'User followed successfully'})
+                return Response({'message': 'User followed successfully'}, status=status.HTTP_201_CREATED)
             return Response({'error': 'User already followed'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -90,5 +94,5 @@ class UnfollowAPIView(APIView):
                 follower=request.user,
                 following=user_to_unfollow
             ).delete()
-            return Response({'message': 'User unfollowed successfully'})
+            return Response({'message': 'User unfollowed successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
