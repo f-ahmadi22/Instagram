@@ -8,7 +8,7 @@ from .models import MyUser, UserRelationship
 @register(MyUser)
 class UserAdmin(admin.ModelAdmin):
     model = MyUser
-    list_display = ('username', 'email', 'profile_picture', 'bio', 'date_joined', 'is_active', 'is_staff',
+    list_display = ('id', 'username', 'email', 'profile_picture', 'bio', 'date_joined', 'is_active', 'is_staff',
                     'is_superuser', 'is_private')
     fieldsets = (
         (None, {'fields': ('username', 'email', 'profile_picture', 'bio')}),
@@ -16,6 +16,7 @@ class UserAdmin(admin.ModelAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     readonly_fields = ('last_login', 'date_joined')
+    ordering = ('pk',)
 
 
 @register(UserRelationship)

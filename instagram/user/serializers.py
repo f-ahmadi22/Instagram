@@ -54,11 +54,11 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
 
     def get_followers(self, obj):
         followers = obj.get_followers()
-        return [MyUser.objects.get(id=follower).username for follower in followers]
+        return [UserProfilePrivateSerializer(MyUser.objects.get(id=follower)).data for follower in followers]
 
     def get_followings(self, obj):
         followings = obj.get_followings()
-        return [MyUser.objects.get(id=following).username for following in followings]
+        return [UserProfilePrivateSerializer(MyUser.objects.get(id=following)).data for following in followings]
 
 
 class UserProfilePrivateSerializer(serializers.ModelSerializer):

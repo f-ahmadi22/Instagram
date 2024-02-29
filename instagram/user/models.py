@@ -42,7 +42,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def get_followings(self):
         # Get followings of given user
