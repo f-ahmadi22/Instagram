@@ -7,11 +7,15 @@ from .models import MyUser, UserRelationship
 
 @register(MyUser)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'is_private', 'bio')
-    list_display_links = ('id', 'username', 'email', 'bio', 'is_private')
-    list_filter = ('is_private',)
-    search_fields = ('username', 'bio')
-    ordering = ('id',)
+    model = MyUser
+    list_display = ('username', 'email', 'profile_picture', 'bio', 'date_joined', 'is_active', 'is_staff',
+                    'is_superuser', 'is_private')
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'profile_picture', 'bio')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_private')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+    readonly_fields = ('last_login', 'date_joined')
 
 
 @register(UserRelationship)
