@@ -68,7 +68,7 @@ class FollowAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user_to_follow = get_object_or_404(MyUser,id=request.data['user_id'])
+        user_to_follow = get_object_or_404(MyUser, pk=request.data['user'])
         if user_to_follow:
             relationship, created = UserRelationship.objects.get_or_create(
                 follower=request.user,
@@ -84,7 +84,7 @@ class UnfollowAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user_to_unfollow = MyUser.objects.filter(id=request.data['user_id']).first()
+        user_to_unfollow = MyUser.objects.filter(id=request.data['user']).first()
         if user_to_unfollow:
             UserRelationship.objects.filter(
                 follower=request.user,

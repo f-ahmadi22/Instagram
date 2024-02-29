@@ -155,3 +155,5 @@ CORS_ALLOW_HEADERS = [
     'Content-Type',
     'Authorization',
 ]
+AUTH_USER_MODEL = 'user.MyUser'
+
