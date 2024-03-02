@@ -28,7 +28,6 @@ class Post(models.Model):
     caption = models.CharField(max_length=255, verbose_name='caption', blank=True, null=True)
     show_comments = models.BooleanField(verbose_name='show comments', default=True)
     show_likes = models.BooleanField(verbose_name='show likes', default=True)
-    show_views = models.BooleanField(verbose_name='show views', default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -45,8 +44,8 @@ class Post(models.Model):
 
 
 class PostMedia(models.Model):
-    post = models.ForeignKey(Post, related_name='media', on_delete=models.CASCADE, verbose_name='post')
-    media = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='media', verbose_name='media')
+    post = models.ForeignKey(Post, related_name='post_media', on_delete=models.CASCADE, verbose_name='post')
+    media = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='post_media')
     order = models.PositiveIntegerField(default=0)  # Order of media in a post
 
 
@@ -67,6 +66,6 @@ class Story(models.Model):
 
 
 class StoryMedia(models.Model):
-    story = models.ForeignKey(Story, related_name='media', on_delete=models.CASCADE, verbose_name='story')
-    media = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='media', verbose_name='media')
+    story = models.ForeignKey(Story, related_name='story_media', on_delete=models.CASCADE, verbose_name='story')
+    media = models.ForeignKey(Media, on_delete=models.CASCADE, related_name='story_media')
     order = models.PositiveIntegerField(default=0)  # Order of media in a story
