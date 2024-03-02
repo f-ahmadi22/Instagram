@@ -27,8 +27,8 @@ class MyUserManager(BaseUserManager):
 class MyUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, verbose_name='email address')
     username = models.CharField(max_length=100, unique=True, verbose_name='username')
-    profile_picture = models.ImageField(upload_to='profile_pictures/', verbose_name='profile picture',
-                                        null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='media/profile_pictures/', verbose_name='profile picture',
+                                        null=True, blank=True, default='/media/profile-pictures/default.jpg')
     bio = models.TextField(verbose_name='biography', blank=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='date')
     is_active = models.BooleanField(default=True, verbose_name='active')
