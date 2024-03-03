@@ -2,22 +2,6 @@ from django.db import models
 from user.models import MyUser
 
 
-class Tag(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='tags', verbose_name='user')
-    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='tags', verbose_name='post')
-
-    def __str__(self):
-        return self.user.username
-
-
-class Mention(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='mentions', verbose_name='user')
-    story = models.ForeignKey('Story', related_name='mentions', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username
-
-
 class Post(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='posts', verbose_name='author')
     location = models.CharField(max_length=255, verbose_name='location', blank=True, null=True)
@@ -67,3 +51,19 @@ class StoryMedia(models.Model):
     story = models.ForeignKey(Story, related_name='story_media', on_delete=models.CASCADE, verbose_name='story')
     media = models.FileField(upload_to='media/content/story/', verbose_name='story media file')
     order = models.PositiveIntegerField(default=0)  # Order of media in a story
+
+
+class Tag(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='tags', verbose_name='user')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='tags', verbose_name='post')
+
+    def __str__(self):
+        return self.user.username
+
+
+class Mention(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='mentions', verbose_name='user')
+    story = models.ForeignKey(Story, related_name='mentions', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username

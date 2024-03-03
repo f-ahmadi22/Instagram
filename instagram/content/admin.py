@@ -4,6 +4,16 @@ from .models import Post, PostMedia, Story, StoryMedia, Mention, Tag
 # Register your models here.
 
 
+class PostMediaInline(admin.StackedInline):  # Post Inline class
+    model = PostMedia
+    extra = 1  # Just one extra object
+
+
+class StoryMediaInline(admin.StackedInline):  # Post Inline class
+    model = StoryMedia
+    extra = 1  # Just one extra object
+
+
 @register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'caption', 'location', 'show_comments', 'show_likes', 'created_at')
@@ -11,6 +21,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ('show_comments', 'show_likes')
     search_fields = ('user__username', 'caption')
     ordering = ('id',)
+    Inlines = [PostMediaInline,]
 
 
 @register(PostMedia)
@@ -26,6 +37,7 @@ class StoryAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'user', 'location', 'created_at')
     list_editable = ('is_active',)
     ordering = ('id',)
+    Inlines = [StoryMediaInline,]
 
 
 @register(StoryMedia)

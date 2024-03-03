@@ -27,7 +27,7 @@ class MentionUserAPIView(APIView):
 
 class FollowedUsersPostsAPIView(APIView):
     def get(self, request):
-        followed_users = request.user.following.all()
+        followed_users = request.user.get_followings()
         posts = Post.objects.filter(user__in=followed_users)
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
