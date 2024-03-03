@@ -49,6 +49,7 @@ class PostMedia(models.Model):
 class Story(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='stories', verbose_name='author')
     location = models.CharField(max_length=255, verbose_name='location', blank=True, null=True)
+    views = models.IntegerField(verbose_name='views', default=0)
     is_active = models.BooleanField(default=True, verbose_name='is active')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='creation date')
 
