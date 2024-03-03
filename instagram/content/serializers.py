@@ -1,11 +1,14 @@
 from rest_framework import serializers
 from .models import Post, Story, Mention
+from user.serializers import UserProfilePrivateSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
+    user = UserProfilePrivateSerializer(read_only=True)
+
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['id', 'location', 'caption', 'user', 'show_likes', 'show_comments', 'views']
 
 
 class StorySerializer(serializers.ModelSerializer):
