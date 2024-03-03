@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from .models import Post, PostMedia, Story, StoryMedia, Mention, Tag, Media
+from .models import Post, PostMedia, Story, StoryMedia, Mention, Tag
 # Register your models here.
 
 
@@ -43,14 +43,9 @@ class MentionAdmin(admin.ModelAdmin):
 
 
 @register(Tag)
-class TaggAdmin(admin.ModelAdmin):
+class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'post')
     list_display_links = ('id', 'user', 'post')
     ordering = ('id',)
 
 
-@register(Media)
-class MediaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'file')
-    list_display_links = ('id', 'file')
-    ordering = ('id',)
