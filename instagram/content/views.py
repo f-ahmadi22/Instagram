@@ -25,4 +25,9 @@ class MentionUserAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+class FollowedUsersPostsAPIView(APIView):
+    def get(self, request):
+        followed_users = request.user.following.all()
+        posts = Post.objects.filter(user__in=followed_users)
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
