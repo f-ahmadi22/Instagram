@@ -12,7 +12,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.username
+        return f'{self.id}'
 
     def get_comments(self):
         return self
@@ -38,7 +38,7 @@ class Story(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='creation date')
 
     def __str__(self):
-        return self.user.username
+        return f'{self.id}'
 
     def get_likes(self):
         return self
