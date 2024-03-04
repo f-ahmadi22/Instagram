@@ -1,13 +1,10 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from . import views
-
-router = DefaultRouter()
-router.register(r'comments', views.CommentViewSet)
-router.register(r'like-posts', views.LikePostViewSet)
-router.register(r'like-comments', views.LikeCommentViewSet)
-router.register(r'like-stories', views.LikeStoryViewSet)
+from .views import CommentAPIView, LikePostAPIView, LikeStoryAPIView, LikeCommentAPIView
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('comments/', CommentAPIView.as_view(), name='comments'),
+    path('like-post/', LikePostAPIView.as_view(), name='like-post'),
+    path('like-story/', LikeStoryAPIView.as_view(), name='like-story'),
+    path('like-comment/', LikeCommentAPIView.as_view(), name='like-comment')
 ]
