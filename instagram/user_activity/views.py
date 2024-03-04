@@ -29,3 +29,12 @@ class LikeCommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class LikeStoryViewSet(viewsets.ModelViewSet):
+    queryset = LikeStory.objects.all()
+    serializer_class = LikeStorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
