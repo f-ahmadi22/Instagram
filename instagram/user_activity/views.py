@@ -20,3 +20,12 @@ class LikePostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class LikeCommentViewSet(viewsets.ModelViewSet):
+    queryset = LikeComment.objects.all()
+    serializer_class = LikeCommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
