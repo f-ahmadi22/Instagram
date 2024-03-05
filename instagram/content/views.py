@@ -18,6 +18,15 @@ class CreatePostAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CreateStoryAPIView(APIView):
+    def post(self, request):
+        serializer = StorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class MentionUserAPIView(APIView):
     def post(self, request):
         serializer = MentionSerializer(data=request.data)
@@ -43,8 +52,8 @@ class FollowedUsersPostsAPIView(APIView):
 
 
 class StoryAPIView(APIView):
-    def get(self, request):
-        story = Story.objects.get(id=request.data['story_id'])
+    def get(self, request, pk):
+        story = Story.objects.get(pk=pk)
         serializer = StorySerializer(story)
 
         storyview = StoryView.objects.create(story=story, user=request.user)

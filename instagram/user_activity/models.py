@@ -16,11 +16,11 @@ class Comment(models.Model):
     def __str__(self):
         return self.text
 
-    def replies(self):
-        return self
+#    def replies(self):
+#        return self
 
     def likes(self):
-        return self
+        return LikeComment.objects.filter(comment=self).count()
 
 
 class LikePost(models.Model):

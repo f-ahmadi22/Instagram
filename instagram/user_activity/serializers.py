@@ -7,10 +7,14 @@ from content.serializers import PostSerializer
 class CommentSerializer(serializers.ModelSerializer):
     author = UserProfilePrivateSerializer(read_only=True)
     post = PostSerializer()
+    likes = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'author', 'post', 'text', 'created_at']
+        fields = ['id', 'author', 'post', 'text', 'likes', 'created_at']
+
+    def get_likes(self, obj):
+        return obj.likes()
 
 
 class LikeCommentSerializer(serializers.ModelSerializer):

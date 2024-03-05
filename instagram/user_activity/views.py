@@ -8,17 +8,16 @@ from content.models import Post, Story
 
 class CommentAPIView(APIView):
     def post(self, request):
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(author=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        post = Post.objects.get(id=request.data['post'])
+        comment = Comment.objects.create(author=request.user, post=post, text=request.data['text'])
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request):
         try:
             comment = Comment.objects.get(id=request.data['comment_id'], author=request.user)
             comment.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'Comment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Comment.DoesNotExist:
             return Response({'detail': 'Comment not found or you are not the author.'},
                             status=status.HTTP_404_NOT_FOUND)
