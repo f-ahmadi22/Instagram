@@ -21,4 +21,13 @@ class PostView(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name='timestamp')
 
     def __str__(self):
-        return f'{self.user.username} viewed {self.post.id}'
+        return f'{self.user.username} viewed post {self.post.id}'
+
+
+class StoryView(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='story_viewer', verbose_name='user')
+    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='story_view', verbose_name='story')
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name='timestamp')
+
+    def __str__(self):
+        return f'{self.user.username} viewed story {self.story.id}'
