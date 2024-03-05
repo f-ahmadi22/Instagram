@@ -23,4 +23,5 @@ urlpatterns = [
     path('content/', include('content.urls')),  # Content app urls
     path('user/', include('user.urls')),  # User app urls
     path('user-activity/', include('user_activity.urls')),  # User activities app urls
+    path('direct/', include('direct.urls')),  # Direct app urls
 ]

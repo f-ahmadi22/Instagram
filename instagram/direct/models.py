@@ -1,14 +1,18 @@
 from django.db import models
-from model_utils.models import TimeStampedModel
+from model_utils.models import TimeStampedModel, SoftDeletableModel, SoftDeletableManager
+from user.models import MyUser
+from django.utils.translation import gettext as _
+from typing import Optional, Any
+from django.db.models import Q
 
 # Create your models here.
 
 
 class DialogsModel(TimeStampedModel):
     id = models.BigAutoField(primary_key=True, verbose_name=_("Id"))
-    user1 = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User1"),
+    user1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("User1"),
                               related_name="+", db_index=True)
-    user2 = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User2"),
+    user2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("User2"),
                               related_name="+", db_index=True)
 
     class Meta:
@@ -20,27 +24,27 @@ class DialogsModel(TimeStampedModel):
         return _("Dialog between ") + f"{self.user1.id}, {self.user2.id}"
 
     @staticmethod
-    def dialog_exists(u1: User, u2: User) -> Optional[Any]:
+    def dialog_exists(u1: MyUser, u2: MyUser) -> Optional[Any]:
         return DialogsModel.objects.filter(Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)).first()
 
     @staticmethod
-    def create_if_not_exists(u1: User, u2: User):
+    def create_if_not_exists(u1: MyUser, u2: MyUser):
         res = DialogsModel.dialog_exists(u1, u2)
         if not res:
             DialogsModel.objects.create(user1=u1, user2=u2)
 
     @staticmethod
-    def get_dialogs_for_user(user: User):
+    def get_dialogs_for_user(user: MyUser):
         return DialogsModel.objects.filter(Q(user1=user) | Q(user2=user)).values_list('user1__pk', 'user2__pk')
+
 
 class MessageModel(TimeStampedModel, SoftDeletableModel):
     id = models.BigAutoField(primary_key=True, verbose_name=_("Id"))
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Author"),
+    sender = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("Author"),
                                related_name='from_user', db_index=True)
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("Recipient"),
+    recipient = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("Recipient"),
                                   related_name='to_user', db_index=True)
     text = models.TextField(verbose_name=_("Text"), blank=True)
-
 
     read = models.BooleanField(verbose_name=_("Read"), default=False)
     all_objects = models.Manager()
