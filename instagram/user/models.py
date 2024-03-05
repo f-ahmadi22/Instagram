@@ -36,6 +36,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False, verbose_name='superuser')
     is_private = models.BooleanField(verbose_name='private', default=False)
 
+    view_count = models.PositiveIntegerField(default=0)
+
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'

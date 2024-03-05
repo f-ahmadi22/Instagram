@@ -6,9 +6,15 @@ from user.models import MyUser
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        print(self.scope)
+        super().__init__(args, kwargs)
+        self.dialog_id = None
+        print('**************')
+
     async def connect(self):
         self.user = self.scope['user']
-        self.dialog_id = self.scope['url_route']['kwargs']['dialog_id']
+        self.dialog_id = self.scope['url_route'].get('kwargs', {}).get('dialog_id')
         self.room_group_name = f'chat_{self.dialog_id}'
 
         # Join room group

@@ -19,4 +19,3 @@ class DialogsModelList(APIView):
         qs = qs.order_by('-created')
         serializer = DialogSerializer(qs, context={'user_pk': user.id}, many=True)
         return Response({'dialogs': serializer.data}, status=status.HTTP_200_OK)
-    

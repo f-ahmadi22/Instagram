@@ -44,7 +44,7 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ['username', 'profile_picture', 'bio', 'is_private', 'date_joined',
-                  'followers_count', 'followings_count', 'followings', 'followers']
+                  'followers_count', 'followings_count', 'followings', 'followers', 'view_count']
 
     def get_followings_count(self, obj):
         return len(obj.get_followings())
@@ -68,7 +68,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ['username', 'profile_picture', 'bio', 'is_private', 'date_joined',
-                  'followers_count', 'followings_count']
+                  'followers_count', 'followings_count', 'view_count']
 
     def get_followings_count(self, obj):
         return len(obj.get_followings())
