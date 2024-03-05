@@ -28,6 +28,7 @@ SECRET_KEY = SECRET_KEY
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels',
     'django_extensions',
+
 
     # myapps
     'content.apps.ContentConfig',
@@ -89,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'instagram.wsgi.application'
+# WSGI_APPLICATION = 'instagram.wsgi.application'
 ASGI_APPLICATION = 'direct.urls.application'
 
 # Database

@@ -5,9 +5,10 @@ from .consumers import ChatConsumer
 from .views import DialogsModelList
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
+from instagram.asgi import get_asgi_application
 
 websocket_urlpatterns = [
-    path('ws/chat/<int:dialog_id>/', ChatConsumer.as_asgi()),
+    re_path(r'ws/chat/(?P<pk>\d+)/(?P<dialog_id>\w+)/$', ChatConsumer.as_asgi()),
 ]
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
 ] + websocket_urlpatterns
 
 application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
     'websocket': AuthMiddlewareStack(
         URLRouter(
             websocket_urlpatterns

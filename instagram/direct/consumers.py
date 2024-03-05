@@ -1,19 +1,24 @@
 # consumers.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from .models import DialogsModel, MessageModel
 from user.models import MyUser
 
 
+@database_sync_to_async
+def get_user_by_pk(pk):
+    return MyUser.objects.get(pk=pk)
+
+
 class ChatConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
-        print(self.scope)
         super().__init__(args, kwargs)
         self.dialog_id = None
-        print('**************')
 
     async def connect(self):
-        self.user = self.scope['user']
+        pk = self.scope['url_route'].get('kwargs', {}).get('pk')
+        self.user = await get_user_by_pk(pk)
         self.dialog_id = self.scope['url_route'].get('kwargs', {}).get('dialog_id')
         self.room_group_name = f'chat_{self.dialog_id}'
 
@@ -35,9 +40,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-
+        print('111111111111')
         await self.save_message(message)
-
+        print('2222222222222')
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -55,7 +60,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': message
         }))
 
-    async def save_message(self, message_text):
+    @database_sync_to_async
+    def save_message(self, message_text):
         # Get recipient from dialog
         dialog = DialogsModel.objects.get(id=self.dialog_id)
         if self.user == dialog.user1:
