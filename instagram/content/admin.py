@@ -14,9 +14,19 @@ class StoryMediaInline(admin.StackedInline):  # Story Inline class
     extra = 1  # Just one extra object
 
 
+class MentionInline(admin.StackedInline):
+    model = Mention
+    extra = 1
+
+
+class TagInline(admin.StackedInline):
+    model = Tag
+    extra = 1
+
+
 @register(Post)
 class PostAdmin(admin.ModelAdmin):
-    Inlines = [PostMediaInline]
+    inlines = [PostMediaInline, TagInline]
     list_display = ('id', 'user', 'caption', 'location', 'show_comments', 'show_likes', 'created_at')
     list_display_links = ('id', 'user', 'caption', 'location', 'created_at')
     list_editable = ('show_comments', 'show_likes')
@@ -33,7 +43,7 @@ class PostMediaAdmin(admin.ModelAdmin):
 
 @register(Story)
 class StoryAdmin(admin.ModelAdmin):
-    Inlines = [StoryMediaInline]
+    inlines = [StoryMediaInline, MentionInline]
     list_display = ('id', 'user', 'location', 'created_at', 'is_active')
     list_display_links = ('id', 'user', 'location', 'created_at')
     list_editable = ('is_active',)
