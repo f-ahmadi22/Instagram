@@ -8,6 +8,7 @@ from .models import MyUser, UserRelationship
 from .serializers import (SignupSerializer, UserProfilePrivateSerializer, UserProfilePublicSerializer,
                           LoginSerializer, UserProfileSerializer)
 from log.signals import post_viewed
+from log.models import ProfileView
 
 
 class SignupAPIView(APIView):
@@ -59,14 +60,20 @@ class ViewProfileAPIView(APIView):
             if user.is_private:
                 if UserRelationship.objects.filter(follower=request.user).exists():
                     serializer = UserProfilePublicSerializer(user)
-                    post_viewed.send(sender=MyUser, instance=user, user=request.user)
+                    profile = ProfileView.objects.create(user=request.user, user_profile=user)
+                    profile.save()
+                    post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
                     return Response(serializer.data)
                 else:
-                    post_viewed.send(sender=MyUser, instance=user, user=request.user)
+                    profile = ProfileView.objects.create(user=request.user, user_profile=user)
+                    profile.save()
+                    post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
                     serializer = UserProfilePrivateSerializer(user)
                     return Response(serializer.data)
             else:
-                post_viewed.send(sender=MyUser, instance=user, user=request.user)
+                profile = ProfileView.objects.create(user=request.user, user_profile=user)
+                profile.save()
+                post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
                 serializer = UserProfilePublicSerializer(user)
                 return Response(serializer.data)
 
