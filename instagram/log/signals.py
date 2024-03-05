@@ -19,14 +19,14 @@ def profile_view_handler(sender, instance, created, **kwargs):
 @receiver(post_save, sender=PostView)
 def post_view_handler(sender, instance, created, **kwargs):
     if created:
-        instance.view_count += 1
+        instance.post.view_count += 1
         instance.save()
-        post_viewed.send(sender=sender, instance=instance, user=instance.author)
+        post_viewed.send(sender=sender, instance=instance, user=instance.user)
 
 
 @receiver(post_save, sender=StoryView)
 def story_view_handler(sender, instance, created, **kwargs):
     if created:
-        instance.view_count += 1
+        instance.story.view_count += 1
         instance.save()
-        post_viewed.send(sender=sender, instance=instance, user=instance.author)
+        post_viewed.send(sender=sender, instance=instance, user=instance.user)
