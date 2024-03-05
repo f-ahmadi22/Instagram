@@ -1,4 +1,6 @@
 from django.db import models
+
+import user_activity
 from user.models import MyUser
 
 
@@ -15,13 +17,10 @@ class Post(models.Model):
         return f'{self.id}'
 
     def get_comments(self):
-        return self
+        return user_activity.models.Comment.objects.filter(post=self).order_by('-created_at')
 
     def get_likes(self):
-        return self
-
-    def get_views(self):
-        return self
+        return user_activity.models.LikePost.objects.filter(post=self).count()
 
 
 class PostMedia(models.Model):
@@ -41,10 +40,7 @@ class Story(models.Model):
         return f'{self.id}'
 
     def get_likes(self):
-        return self
-
-    def get_views(self):
-        return self
+        return user_activity.models.LikeStory.objects.filter(story=self).count()
 
 
 class StoryMedia(models.Model):

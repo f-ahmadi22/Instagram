@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import MyUser
-from content.models import Post, Story
+from content import models as m
 
 
 # Create your models here.
@@ -8,7 +8,7 @@ from content.models import Post, Story
 
 class Comment(models.Model):
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='comments', verbose_name='author')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments', verbose_name='post')
+    post = models.ForeignKey(m.Post, on_delete=models.CASCADE, related_name='comments', verbose_name='post')
     text = models.TextField(verbose_name='text')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
     is_reply = models.BooleanField(default=False, verbose_name='is reply')
@@ -25,7 +25,7 @@ class Comment(models.Model):
 
 class LikePost(models.Model):
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='like_post', verbose_name='author')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='like_post', verbose_name='post')
+    post = models.ForeignKey(m.Post, on_delete=models.CASCADE, related_name='like_post', verbose_name='post')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
 
     def __str__(self):
@@ -43,7 +43,7 @@ class LikeComment(models.Model):
 
 class LikeStory(models.Model):
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='like_story', verbose_name='author')
-    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='like_story', verbose_name='story')
+    story = models.ForeignKey(m.Story, on_delete=models.CASCADE, related_name='like_story', verbose_name='story')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
 
     def __str__(self):
