@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import MyUser, UserRelationship
 from .serializers import (SignupSerializer, UserProfilePrivateSerializer, UserProfilePublicSerializer,
                           LoginSerializer, UserProfileSerializer)
+from log.signals import post_viewed
 
 
 class SignupAPIView(APIView):
@@ -58,13 +59,17 @@ class ViewProfileAPIView(APIView):
             if user.is_private:
                 if UserRelationship.objects.filter(follower=request.user).exists():
                     serializer = UserProfilePublicSerializer(user)
+                    post_viewed.send(sender=MyUser, instance=user, user=request.user)
                     return Response(serializer.data)
                 else:
+                    post_viewed.send(sender=MyUser, instance=user, user=request.user)
                     serializer = UserProfilePrivateSerializer(user)
                     return Response(serializer.data)
             else:
+                post_viewed.send(sender=MyUser, instance=user, user=request.user)
                 serializer = UserProfilePublicSerializer(user)
                 return Response(serializer.data)
+
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
