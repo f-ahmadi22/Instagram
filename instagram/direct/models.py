@@ -11,50 +11,50 @@ from django.db.models import Q
 class DialogsModel(TimeStampedModel):
     id = models.BigAutoField(primary_key=True, verbose_name=_("Id"))
     user1 = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("User1"),
-                              related_name="+", db_index=True)
+                              related_name="+", db_index=True)  # User1 of the dialog created
     user2 = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("User2"),
-                              related_name="+", db_index=True)
+                              related_name="+", db_index=True)  # User2 of the dialog created
 
     class Meta:
-        unique_together = (('user1', 'user2'), ('user2', 'user1'))
+        unique_together = (('user1', 'user2'), ('user2', 'user1'))  # Both are true
         verbose_name = _("Dialog")
         verbose_name_plural = _("Dialogs")
 
-    def __str__(self):
+    def __str__(self):  # Dialog between User1, User2
         return _("Dialog between ") + f"{self.user1.id}, {self.user2.id}"
 
     @staticmethod
-    def dialog_exists(u1: MyUser, u2: MyUser) -> Optional[Any]:
+    def dialog_exists(u1: MyUser, u2: MyUser) -> Optional[Any]:  # Check if there is a dialog between 2 users
         return DialogsModel.objects.filter(Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)).first()
 
     @staticmethod
     def create_if_not_exists(u1: MyUser, u2: MyUser):
         res = DialogsModel.dialog_exists(u1, u2)
         if not res:
-            DialogsModel.objects.create(user1=u1, user2=u2)
+            DialogsModel.objects.create(user1=u1, user2=u2)  # Create dialog if not exist
 
     @staticmethod
-    def get_dialogs_for_user(user: MyUser):
+    def get_dialogs_for_user(user: MyUser):  # Get dialogs of a user
         return DialogsModel.objects.filter(Q(user1=user) | Q(user2=user)).values_list('user1__pk', 'user2__pk')
 
 
 class MessageModel(TimeStampedModel, SoftDeletableModel):
     id = models.BigAutoField(primary_key=True, verbose_name=_("Id"))
     sender = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("Author"),
-                               related_name='from_user', db_index=True)
+                               related_name='from_user', db_index=True)  # Sender of a message
     recipient = models.ForeignKey(MyUser, on_delete=models.CASCADE, verbose_name=_("Recipient"),
-                                  related_name='to_user', db_index=True)
-    text = models.TextField(verbose_name=_("Text"), blank=True)
+                                  related_name='to_user', db_index=True)  # Receiver of the message
+    text = models.TextField(verbose_name=_("Text"), blank=True)  # Text message
 
-    read = models.BooleanField(verbose_name=_("Read"), default=False)
+    read = models.BooleanField(verbose_name=_("Read"), default=False)  # Is read or unread
     all_objects = models.Manager()
 
     @staticmethod
-    def get_unread_count_for_dialog_with_user(sender, recipient):
+    def get_unread_count_for_dialog_with_user(sender, recipient):  # Get user's unread message count
         return MessageModel.objects.filter(sender_id=sender, recipient_id=recipient, read=False).count()
 
     @staticmethod
-    def get_last_message_for_dialog(sender, recipient):
+    def get_last_message_for_dialog(sender, recipient):  # Get last message of a dialog
         return MessageModel.objects.filter(
             Q(sender_id=sender, recipient_id=recipient) | Q(sender_id=recipient, recipient_id=sender)) \
             .select_related('sender', 'recipient').first()
@@ -62,12 +62,12 @@ class MessageModel(TimeStampedModel, SoftDeletableModel):
     def __str__(self):
         return str(self.pk)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # Save message object
         super(MessageModel, self).save(*args, **kwargs)
         DialogsModel.create_if_not_exists(self.sender, self.recipient)
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created',)  # order by creation time descending
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
 
