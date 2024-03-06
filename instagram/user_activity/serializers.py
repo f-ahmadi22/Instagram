@@ -5,21 +5,22 @@ from content.serializers import PostSerializer
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = UserProfilePrivateSerializer(read_only=True)
-    post = PostSerializer()
-    likes = serializers.SerializerMethodField()
+    author = UserProfilePrivateSerializer(read_only=True)  # Serialize user to show details
+    post = PostSerializer()  # Serialize post to show details
+    likes = serializers.SerializerMethodField()  # Serializer method to get likes count
 
     class Meta:
         model = Comment
         fields = ['id', 'author', 'post', 'text', 'likes', 'created_at']
 
     def get_likes(self, obj):
+        # Return likes count of a comment
         return obj.likes()
 
 
 class LikeCommentSerializer(serializers.ModelSerializer):
-    author = UserProfilePrivateSerializer(read_only=True)
-    comment = CommentSerializer()
+    author = UserProfilePrivateSerializer(read_only=True)  # Serialize user to show details
+    comment = CommentSerializer()  # Serialize comment to show details
 
     class Meta:
         model = LikeComment
@@ -27,7 +28,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
 
 
 class LikeStorySerializer(serializers.ModelSerializer):
-    author = UserProfilePrivateSerializer(read_only=True)
+    author = UserProfilePrivateSerializer(read_only=True)  # Serialize user to show details
 
     class Meta:
         model = LikeStory
@@ -35,8 +36,8 @@ class LikeStorySerializer(serializers.ModelSerializer):
 
 
 class LikePostSerializer(serializers.ModelSerializer):
-    author = UserProfilePrivateSerializer(read_only=True)
-    post = PostSerializer()
+    author = UserProfilePrivateSerializer(read_only=True)  # Serialize user to show details
+    post = PostSerializer()  # Serialize post to show details
 
     class Meta:
         model = LikePost
