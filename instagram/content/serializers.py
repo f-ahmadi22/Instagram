@@ -6,9 +6,9 @@ from user.serializers import UserProfilePrivateSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
-    user = UserProfilePrivateSerializer(read_only=True)
-    likes_count = serializers.SerializerMethodField()
-    comments = serializers.SerializerMethodField()
+    user = UserProfilePrivateSerializer(read_only=True)  # Serialize user to get details
+    likes_count = serializers.SerializerMethodField()  # Method to get likes count
+    comments = serializers.SerializerMethodField()  # Comments of the post
 
     class Meta:
         model = Post
@@ -35,7 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class StorySerializer(serializers.ModelSerializer):
-    likes_count = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()  # Method to get likes of a story
 
     class Meta:
         model = Story
@@ -43,6 +43,7 @@ class StorySerializer(serializers.ModelSerializer):
                   'likes_count', 'view_count']
 
     def get_likes_count(self, obj):
+        # Return the number of likes for the story
         return obj.get_likes()
 
 
