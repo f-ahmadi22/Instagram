@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Post, Story
+from .models import Post, Story, PostMedia
 from .serializers import PostSerializer, MentionSerializer, StorySerializer
 from log.signals import post_viewed
 from log.models import PostView, StoryView
@@ -14,6 +14,10 @@ class CreatePostAPIView(APIView):  # Create post
         serializer = PostSerializer(data=request.data)  # Serialize input data
         if serializer.is_valid():  # Return serializer data If data is valid
             serializer.save(user=request.user)  # Create post
+            order = 0
+            for media in request.FILES.getlist('media'):
+                PostMedia.objects.create(post=Post.objects.get(id=serializer.data['id']), media=media, order=order)
+                order += 1
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Invalid data
 
