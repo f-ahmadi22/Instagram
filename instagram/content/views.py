@@ -61,3 +61,15 @@ class StoryAPIView(APIView):
         post_viewed.send(sender=StoryView, instance=storyview, user=request.user)  # Send signal after save model
 
         return Response(serializer.data, status=status.HTTP_200_OK)  # Return serialized data as output
+
+
+class PostAPIView(APIView):
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)  # Find post by pk
+        serializer = PostSerializer(post)  # Serialize post object found
+
+        postview = PostView.objects.create(post=post, user=request.user)  # Save post view object
+        postview.save()
+        post_viewed.send(sender=PostView, instance=postview, user=request.user)  # Send signal after save model
+
+        return Response(serializer.data, status=status.HTTP_200_OK)  # Return serialized data as output

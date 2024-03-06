@@ -35,6 +35,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class StorySerializer(serializers.ModelSerializer):
+    user = UserProfilePrivateSerializer(read_only=True)  # Serialize user to get details
     likes_count = serializers.SerializerMethodField()  # Method to get likes of a story
 
     class Meta:
