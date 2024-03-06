@@ -17,7 +17,7 @@ pip install -r requirements.txt
         Get all posts of followed users :  'content/posts/'
         mention a user in a story :  'content/mention/'
         get a story (view a story) : 'content/story/<int:pk>/'
-        ** needs token authentication in every, so user needs to login
+        ** needs token authentication in every step, so user needs to login
     
 
 
