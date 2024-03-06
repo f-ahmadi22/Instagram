@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import MyUser, UserRelationship
+from .models import MyUser, UserRelationship, FollowRequest
 from .serializers import (SignupSerializer, UserProfilePrivateSerializer, UserProfilePublicSerializer,
                           LoginSerializer, UserProfileSerializer)
 from log.signals import post_viewed
@@ -93,26 +93,51 @@ class ViewProfileAPIView(APIView):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class FollowAPIView(APIView):
+class FollowRequestAPIView(APIView):
     # Authentication needed
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # Find the user by pk to follow
+        # Get user to follow
         user_to_follow = get_object_or_404(MyUser, pk=request.data['user'])
         if user_to_follow:
-            # Follow user and create relation
-            relationship, created = UserRelationship.objects.get_or_create(
-                follower=request.user,
-                following=user_to_follow
-            )
-            if created:
-                # Return success response
-                return Response({'message': 'User followed successfully'}, status=status.HTTP_201_CREATED)
-            # User already followed
-            return Response({'error': 'User already followed'}, status=status.HTTP_400_BAD_REQUEST)
-        # User not found, wrong pk passed
+            # Create a follow request
+            FollowRequest.objects.create(sender=request.user, receiver=user_to_follow)
+            return Response({'message': 'Follow request sent successfully'}, status=status.HTTP_201_CREATED)
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FollowAcceptAPIView(APIView):
+    # Authentication needed
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Get follow request
+        follow_request_id = request.data['follow_request']
+        follow_request = get_object_or_404(FollowRequest, pk=follow_request_id)
+        # If this user is the one who got the request
+        if follow_request and follow_request.receiver == request.user:
+            # Accept the follow request
+            UserRelationship.objects.create(follower=follow_request.sender, following=request.user)
+            follow_request.delete()  # Delete follow request
+            return Response({'message': 'Follow request accepted'}, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid follow request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FollowRejectAPIView(APIView):
+    # Authentication needed
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        # Get follow request
+        follow_request_id = request.data['follow_request']
+        follow_request = get_object_or_404(FollowRequest, pk=follow_request_id)
+        # If this user is the one who got the request
+        if follow_request and follow_request.receiver == request.user:
+            # Reject the follow request
+            follow_request.delete()  # Delete follow request
+            return Response({'message': 'Follow request rejected'}, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid follow request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UnfollowAPIView(APIView):

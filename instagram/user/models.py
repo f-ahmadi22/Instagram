@@ -67,3 +67,14 @@ class UserRelationship(models.Model):
 
     def __str__(self):
         return f'{self.follower.username} follows {self.following.username}'
+
+
+class FollowRequest(models.Model):
+    # User who sent follow request
+    sender = models.ForeignKey(MyUser, related_name='sent_follow_requests', on_delete=models.CASCADE)
+    # User who is being followed
+    receiver = models.ForeignKey(MyUser, related_name='received_follow_requests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('sender', 'receiver')

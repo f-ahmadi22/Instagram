@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import MyUser, UserRelationship
+from .models import MyUser, UserRelationship, FollowRequest
 
 
 class MyUserAdmin(UserAdmin):
@@ -31,4 +31,12 @@ class UserRelationshipAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'follower', 'following')
     search_fields = ('follower__username', 'following__username')  # Search through these fields
     ordering = ('id',)  # Order by id
+
+
+@admin.register(FollowRequest)
+class FollowRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sender', 'receiver', 'created_at')  # List of fields to display
+    list_display_links = ('id', 'sender', 'receiver', 'created_at')
+    search_fields = ('sender__username', 'receiver__username')  # Search through these fields
+    ordering = ('-created_at',)  # Order by creation time
 
