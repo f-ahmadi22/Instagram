@@ -14,12 +14,13 @@ from log.models import ProfileView
 class SignupAPIView(APIView):
     def post(self, request):
         serializer = SignupSerializer(data=request.data)  # Serialize input data
-        if serializer.is_valid():
+        if serializer.is_valid(): # If serializer is vallid
             user = serializer.save()  # Create User
             refresh = RefreshToken.for_user(user)  # Generate token
+            # Return refresh and access token of user
             return Response({'message': 'User created successfully', 'refresh': str(refresh),
                              'access': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Return Serializer errors
 
 
 class LoginAPIView(APIView):
@@ -40,71 +41,94 @@ class LoginAPIView(APIView):
 
 
 class EditProfileAPIView(APIView):
+    # Authentication needed
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request):
-        print(request)
         user = request.user
-        print(user)
-        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)  # Serialize data fields updated
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Profile updated successfully'})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()  # Save new data to user
+            return Response({'message': 'Profile updated successfully'})  # Profile edited successfully
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Invalid data errors
 
 
 class ViewProfileAPIView(APIView):
     def get(self, request, pk):
-        user = MyUser.objects.filter(pk=pk).first()
+        user = MyUser.objects.filter(pk=pk).first()  # Get user by pk
         if user:
-            if user.is_private:
+            if user.is_private:  # If user is private
+                # If the user is my following so I can see his profile as a public
                 if UserRelationship.objects.filter(follower=request.user).exists():
+                    # Serialize data as a public user
                     serializer = UserProfilePublicSerializer(user)
+                    # Create profile view
                     profile = ProfileView.objects.create(user=request.user, user_profile=user)
                     profile.save()
+                    # Send signal of viewing someone's profile to add user's view_count
                     post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
+                    # Return user's profile
                     return Response(serializer.data)
-                else:
+
+                else:  # If user is private and not my following
+                    # Create profile view
                     profile = ProfileView.objects.create(user=request.user, user_profile=user)
                     profile.save()
+                    # Send signal of viewing someone's profile to add user's view_count
                     post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
                     serializer = UserProfilePrivateSerializer(user)
+                    # Return user's profile
                     return Response(serializer.data)
-            else:
+            else:  # If user is public
+                # Create profile view
                 profile = ProfileView.objects.create(user=request.user, user_profile=user)
                 profile.save()
+                # Send signal of viewing someone's profile to add user's view_count
                 post_viewed.send(sender=ProfileView, instance=profile, user=request.user)
                 serializer = UserProfilePublicSerializer(user)
+                # Return user's profile
                 return Response(serializer.data)
 
+        # User not found error, wrong pk passed
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class FollowAPIView(APIView):
+    # Authentication needed
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        # Find the user by pk to follow
         user_to_follow = get_object_or_404(MyUser, pk=request.data['user'])
         if user_to_follow:
+            # Follow user and create relation
             relationship, created = UserRelationship.objects.get_or_create(
                 follower=request.user,
                 following=user_to_follow
             )
             if created:
+                # Return success response
                 return Response({'message': 'User followed successfully'}, status=status.HTTP_201_CREATED)
+            # User already followed
             return Response({'error': 'User already followed'}, status=status.HTTP_400_BAD_REQUEST)
+        # User not found, wrong pk passed
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UnfollowAPIView(APIView):
+    # Authentication needed
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        # Find the user by pk to unfollow
         user_to_unfollow = MyUser.objects.filter(id=request.data['user']).first()
         if user_to_unfollow:
+            # Find user relation and delete
             UserRelationship.objects.filter(
                 follower=request.user,
                 following=user_to_unfollow
             ).delete()
+            # Return success response
             return Response({'message': 'User unfollowed successfully'}, status=status.HTTP_201_CREATED)
+        # User not found, wrong pk passed
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
